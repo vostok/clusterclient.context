@@ -12,15 +12,18 @@ namespace Vostok.ClusterClient.Context.Tests
         private DistributedContextModule module;
         private IRequestContext context;
         private Request request;
+        private RequestParameters parameters;
 
         [SetUp]
         public void Setup()
         {
             context = Substitute.For<IRequestContext>();
             request = Request.Get("http://a/");
+            parameters = RequestParameters.Empty;
             context.Request = request;
+            context.Parameters = parameters;
 
-            module = new DistributedContextModule();
+            module = new DistributedContextModule(true);
         }
 
         [Test]
@@ -29,8 +32,6 @@ namespace Vostok.ClusterClient.Context.Tests
             FlowingContext.Configuration.RegisterDistributedGlobal("a", ContextSerializers.Int);
             
             SetGlobals(1, 2);
-
-            var a = GetGlobals();
 
             module.ExecuteAsync(
                 context,
@@ -86,6 +87,23 @@ namespace Vostok.ClusterClient.Context.Tests
                     globals.Should().BeNull();
                     properties.Should().BeNull();
                     
+                    Assert.Pass();
+                    return null;
+                }).GetAwaiter().GetResult();
+        }
+        
+        [TestCase(RequestPriority.Critical)]
+        [TestCase(RequestPriority.Ordinary)]
+        [TestCase(RequestPriority.Sheddable)]
+        public void Should_set_request_priority(RequestPriority priority)
+        {
+            FlowingContext.Globals.Set<RequestPriority?>(priority);
+            
+            module.ExecuteAsync(
+                context,
+                requestContext =>
+                {
+                    requestContext.Parameters.Priority.Should().Be(priority);
                     Assert.Pass();
                     return null;
                 }).GetAwaiter().GetResult();

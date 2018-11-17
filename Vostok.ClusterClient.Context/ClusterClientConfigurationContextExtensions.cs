@@ -15,9 +15,15 @@ namespace Vostok.ClusterClient.Context
         /// <summary>
         /// Sets up an integration with vostok.context module which transfer <see cref="FlowingContext"/> data between client and server.
         /// </summary>
-        public static IClusterClientConfiguration SetupDistributedContext(this IClusterClientConfiguration configuration)
+        public static IClusterClientConfiguration SetupDistributedContext(
+            this IClusterClientConfiguration configuration,
+            bool useContextualRequestPriority = true)
         {
-            configuration.AddRequestModule(new DistributedContextModule(), RequestModule.AuxiliaryHeaders, ModulePosition.Before);
+            configuration.AddRequestModule(
+                new DistributedContextModule(useContextualRequestPriority),
+                RequestModule.AuxiliaryHeaders,
+                ModulePosition.Before);
+            
             return configuration;
         }
     }
