@@ -40,7 +40,7 @@ namespace Vostok.Clusterclient.Context.Tests
                     requestContext =>
                     {
                         ResetGlobals();
-                        var globals = requestContext.Request.Headers?[HeaderNames.VostokContextGlobals];
+                        var globals = requestContext.Request.Headers?[HeaderNames.ContextGlobals];
 
                         globals.Should().NotBeNull();
                         FlowingContext.RestoreDistributedGlobals(globals);
@@ -64,7 +64,7 @@ namespace Vostok.Clusterclient.Context.Tests
                     requestContext =>
                     {
                         ResetProperties();
-                        var properties = requestContext.Request.Headers?[HeaderNames.VostokContextProperties];
+                        var properties = requestContext.Request.Headers?[HeaderNames.ContextProperties];
 
                         properties.Should().NotBeNull();
                         FlowingContext.RestoreDistributedProperties(properties);
@@ -87,8 +87,8 @@ namespace Vostok.Clusterclient.Context.Tests
                     requestContext =>
                     {
                         ResetProperties();
-                        var globals = requestContext.Request.Headers?[HeaderNames.VostokContextGlobals];
-                        var properties = requestContext.Request.Headers?[HeaderNames.VostokContextProperties];
+                        var globals = requestContext.Request.Headers?[HeaderNames.ContextGlobals];
+                        var properties = requestContext.Request.Headers?[HeaderNames.ContextProperties];
 
                         globals.Should().BeNull();
                         properties.Should().BeNull();
