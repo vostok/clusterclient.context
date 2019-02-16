@@ -8,13 +8,11 @@ notests *default:
   install:
     - Vostok.ClusterClient.Context/bin/Release/netstandard2.0/Vostok.ClusterClient.Context.dll
     - module vostok.clusterclient.core
-    - vostok.context
 
   deps:
+    - vostok.devtools
     - vostok.context
     - vostok.clusterclient.core
-    - vostok.logging.abstractions
-    - vostok.devtools
 
 full-build > notests:
   build:
