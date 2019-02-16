@@ -5,7 +5,9 @@ using Vostok.Clusterclient.Core.Model;
 using Vostok.Clusterclient.Core.Modules;
 using Vostok.Context;
 
-namespace Vostok.ClusterClient.Context.Tests
+// ReSharper disable AssignNullToNotNullAttribute
+
+namespace Vostok.Clusterclient.Context.Tests
 {
     public class DistributedContextModule_Tests
     {
@@ -23,51 +25,55 @@ namespace Vostok.ClusterClient.Context.Tests
             context.Request = request;
             context.Parameters = parameters;
 
-            module = new DistributedContextModule(true);
+            module = new DistributedContextModule();
         }
 
         [Test]
         public void Should_serialize_distributed_globals()
         {
             FlowingContext.Configuration.RegisterDistributedGlobal("a", ContextSerializers.Int);
-            
-            SetGlobals(1, 2);
+
+            SetGlobals(123, 456);
 
             module.ExecuteAsync(
-                context,
-                requestContext =>
-                {
-                    ResetGlobals();
-                    var globals = requestContext.Request.Headers?[ContextHeaders.Globals];
+                    context,
+                    requestContext =>
+                    {
+                        ResetGlobals();
+                        var globals = requestContext.Request.Headers?[HeaderNames.VostokContextGlobals];
 
-                    globals.Should().NotBeNull();
-                    FlowingContext.RestoreDistributedGlobals(globals);
-                    GetGlobals().Should().Be((1, 0));
-                    Assert.Pass();
-                    return null;
-                }).GetAwaiter().GetResult();
+                        globals.Should().NotBeNull();
+                        FlowingContext.RestoreDistributedGlobals(globals);
+                        GetGlobals().Should().Be((123, 0));
+                        Assert.Pass();
+                        return null;
+                    })
+                .GetAwaiter()
+                .GetResult();
         }
 
         [Test]
         public void Should_serialize_distributed_properties()
-        {            
+        {
             FlowingContext.Configuration.RegisterDistributedProperty("a", ContextSerializers.Int);
 
-            SetProperties(1, 2);
+            SetProperties(234, 567);
 
             module.ExecuteAsync(
-                context,
-                requestContext =>
-                {
-                    ResetProperties();
-                    var properties = requestContext.Request.Headers?[ContextHeaders.Globals];
+                    context,
+                    requestContext =>
+                    {
+                        ResetProperties();
+                        var properties = requestContext.Request.Headers?[HeaderNames.VostokContextProperties];
 
-                    properties.Should().NotBeNull();
-                    FlowingContext.RestoreDistributedProperties(properties);
-                    GetProperties().Should().Be((1, 0));
-                    Assert.Pass();
-                    return null;
-                }).GetAwaiter().GetResult();
+                        properties.Should().NotBeNull();
+                        FlowingContext.RestoreDistributedProperties(properties);
+                        GetProperties().Should().Be((234, 0));
+                        Assert.Pass();
+                        return null;
+                    })
+                .GetAwaiter()
+                .GetResult();
         }
 
         [Test]
@@ -77,36 +83,40 @@ namespace Vostok.ClusterClient.Context.Tests
             FlowingContext.Configuration.ClearDistributedProperties();
 
             module.ExecuteAsync(
-                context,
-                requestContext =>
-                {
-                    ResetProperties();
-                    var globals = requestContext.Request.Headers?[ContextHeaders.Globals];
-                    var properties = requestContext.Request.Headers?[ContextHeaders.Properties];
+                    context,
+                    requestContext =>
+                    {
+                        ResetProperties();
+                        var globals = requestContext.Request.Headers?[HeaderNames.VostokContextGlobals];
+                        var properties = requestContext.Request.Headers?[HeaderNames.VostokContextProperties];
 
-                    globals.Should().BeNull();
-                    properties.Should().BeNull();
-                    
-                    Assert.Pass();
-                    return null;
-                }).GetAwaiter().GetResult();
+                        globals.Should().BeNull();
+                        properties.Should().BeNull();
+
+                        Assert.Pass();
+                        return null;
+                    })
+                .GetAwaiter()
+                .GetResult();
         }
-        
+
         [TestCase(RequestPriority.Critical)]
         [TestCase(RequestPriority.Ordinary)]
         [TestCase(RequestPriority.Sheddable)]
         public void Should_set_request_priority(RequestPriority priority)
         {
             FlowingContext.Globals.Set<RequestPriority?>(priority);
-            
+
             module.ExecuteAsync(
-                context,
-                requestContext =>
-                {
-                    requestContext.Parameters.Priority.Should().Be(priority);
-                    Assert.Pass();
-                    return null;
-                }).GetAwaiter().GetResult();
+                    context,
+                    requestContext =>
+                    {
+                        requestContext.Parameters.Priority.Should().Be(priority);
+                        Assert.Pass();
+                        return null;
+                    })
+                .GetAwaiter()
+                .GetResult();
         }
 
         private static void SetGlobals(int int32, long int64)

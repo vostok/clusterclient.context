@@ -1,35 +1,30 @@
 using System;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Vostok.Clusterclient.Core.Model;
 using Vostok.Clusterclient.Core.Modules;
 using Vostok.Context;
 
-namespace Vostok.ClusterClient.Context
+namespace Vostok.Clusterclient.Context
 {
-    internal class DistributedContextModule : IRequestModule
+    /// <summary>
+    /// <para>A module that does three things:</para>
+    /// <list type="bullet">
+    ///     <item><description>Adds a <see cref="HeaderNames.VostokContextGlobals"/> header to request if there are any distributed <see cref="FlowingContext.Globals"/> in ambient context.</description></item>
+    ///     <item><description>Adds a <see cref="HeaderNames.VostokContextProperties"/> header to request if there are any distributed <see cref="FlowingContext.Properties"/> in ambient context.</description></item>
+    ///     <item><description>Sets the <see cref="RequestPriority"/> in request parameters if none was specified by user and there's currently a non-null nullable <see cref="RequestPriority"/> value in ambient context <see cref="FlowingContext.Globals"/>.</description></item>
+    /// </list>
+    /// </summary>
+    [PublicAPI]
+    public class DistributedContextModule : IRequestModule
     {
-        private readonly bool useContextualRequestPriority;
-
-        public DistributedContextModule(bool useContextualRequestPriority)
-        {
-            this.useContextualRequestPriority = useContextualRequestPriority;
-        }
-
         public Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
         {
             SerializeDistributedContext(context);
 
-            if (useContextualRequestPriority)
-                SetRequestPriority(context);
-            
-            return next(context);
-        }
+            SetRequestPriority(context);
 
-        private static void SetRequestPriority(IRequestContext context)
-        {
-            var priority = FlowingContext.Globals.Get<RequestPriority?>();
-            if (priority.HasValue && context.Parameters.Priority == null)
-                context.Parameters = context.Parameters.WithPriority(priority);
+            return next(context);
         }
 
         private static void SerializeDistributedContext(IRequestContext context)
@@ -38,10 +33,17 @@ namespace Vostok.ClusterClient.Context
             var properties = FlowingContext.SerializeDistributedProperties();
 
             if (globals != null)
-                context.SetHeader(ContextHeaders.Globals, globals);
+                context.Request = context.Request.WithHeader(HeaderNames.VostokContextGlobals, globals);
 
             if (properties != null)
-                context.SetHeader(ContextHeaders.Properties, globals);
+                context.Request = context.Request.WithHeader(HeaderNames.VostokContextProperties, properties);
+        }
+
+        private static void SetRequestPriority(IRequestContext context)
+        {
+            var priority = FlowingContext.Globals.Get<RequestPriority?>();
+            if (priority.HasValue && context.Parameters.Priority == null)
+                context.Parameters = context.Parameters.WithPriority(priority);
         }
     }
 }
