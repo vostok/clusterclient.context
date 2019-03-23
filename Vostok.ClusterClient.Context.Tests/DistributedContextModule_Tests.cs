@@ -9,7 +9,8 @@ using Vostok.Context;
 
 namespace Vostok.Clusterclient.Context.Tests
 {
-    public class DistributedContextModule_Tests
+    [TestFixture]
+    internal class DistributedContextModule_Tests
     {
         private DistributedContextModule module;
         private IRequestContext context;
@@ -26,78 +27,6 @@ namespace Vostok.Clusterclient.Context.Tests
             context.Parameters = parameters;
 
             module = new DistributedContextModule();
-        }
-
-        [Test]
-        public void Should_serialize_distributed_globals()
-        {
-            FlowingContext.Configuration.RegisterDistributedGlobal("a", ContextSerializers.Int);
-
-            SetGlobals(123, 456);
-
-            module.ExecuteAsync(
-                    context,
-                    requestContext =>
-                    {
-                        ResetGlobals();
-                        var globals = requestContext.Request.Headers?[HeaderNames.ContextGlobals];
-
-                        globals.Should().NotBeNull();
-                        FlowingContext.RestoreDistributedGlobals(globals);
-                        GetGlobals().Should().Be((123, 0));
-                        Assert.Pass();
-                        return null;
-                    })
-                .GetAwaiter()
-                .GetResult();
-        }
-
-        [Test]
-        public void Should_serialize_distributed_properties()
-        {
-            FlowingContext.Configuration.RegisterDistributedProperty("a", ContextSerializers.Int);
-
-            SetProperties(234, 567);
-
-            module.ExecuteAsync(
-                    context,
-                    requestContext =>
-                    {
-                        ResetProperties();
-                        var properties = requestContext.Request.Headers?[HeaderNames.ContextProperties];
-
-                        properties.Should().NotBeNull();
-                        FlowingContext.RestoreDistributedProperties(properties);
-                        GetProperties().Should().Be((234, 0));
-                        Assert.Pass();
-                        return null;
-                    })
-                .GetAwaiter()
-                .GetResult();
-        }
-
-        [Test]
-        public void Should_do_nothing_when_globals_and_properties_are_empty()
-        {
-            FlowingContext.Configuration.ClearDistributedGlobals();
-            FlowingContext.Configuration.ClearDistributedProperties();
-
-            module.ExecuteAsync(
-                    context,
-                    requestContext =>
-                    {
-                        ResetProperties();
-                        var globals = requestContext.Request.Headers?[HeaderNames.ContextGlobals];
-                        var properties = requestContext.Request.Headers?[HeaderNames.ContextProperties];
-
-                        globals.Should().BeNull();
-                        properties.Should().BeNull();
-
-                        Assert.Pass();
-                        return null;
-                    })
-                .GetAwaiter()
-                .GetResult();
         }
 
         [TestCase(RequestPriority.Critical)]
@@ -117,40 +46,6 @@ namespace Vostok.Clusterclient.Context.Tests
                     })
                 .GetAwaiter()
                 .GetResult();
-        }
-
-        private static void SetGlobals(int int32, long int64)
-        {
-            FlowingContext.Globals.Set(int32);
-            FlowingContext.Globals.Set(int64);
-        }
-
-        private static void ResetGlobals()
-            => SetGlobals(default, default);
-
-        private static (int, long) GetGlobals()
-        {
-            var int32 = FlowingContext.Globals.Get<int>();
-            var int64 = FlowingContext.Globals.Get<long>();
-
-            return (int32, int64);
-        }
-
-        private static void SetProperties(int int32, long int64)
-        {
-            FlowingContext.Properties.Set("a", int32);
-            FlowingContext.Properties.Set("b", int64);
-        }
-
-        private static void ResetProperties()
-            => SetProperties(default, default);
-
-        private static (int, long) GetProperties()
-        {
-            var int32 = FlowingContext.Properties.Get<int>("a");
-            var int64 = FlowingContext.Properties.Get<long>("b");
-
-            return (int32, int64);
         }
     }
 }
