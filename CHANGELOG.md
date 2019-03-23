@@ -1,3 +1,7 @@
+## 0.1.3 (23-03-2019):
+
+DistributedContextTransport now overwrites already existing headers.
+
 ## 0.1.2 (23-03-2019):
 
 Context headers are now set by a transport decorator in order to support context changes from other transport decorators (e.g the one used in tracing module).
