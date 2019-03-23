@@ -29,19 +29,13 @@ namespace Vostok.Clusterclient.Context
 
         public Task<Response> SendAsync(Request request, TimeSpan? connectionTimeout, TimeSpan timeout, CancellationToken cancellationToken)
         {
-            if (request.Headers?[HeaderNames.ContextGlobals] == null)
-            {
-                var globals = FlowingContext.SerializeDistributedGlobals();
-                if (globals != null)
-                    request = request.WithHeader(HeaderNames.ContextGlobals, globals);
-            }
+            var globals = FlowingContext.SerializeDistributedGlobals();
+            if (globals != null)
+                request = request.WithHeader(HeaderNames.ContextGlobals, globals);
 
-            if (request.Headers?[HeaderNames.ContextProperties] == null)
-            {
-                var properties = FlowingContext.SerializeDistributedProperties();
-                if (properties != null)
-                    request = request.WithHeader(HeaderNames.ContextProperties, properties);
-            }
+            var properties = FlowingContext.SerializeDistributedProperties();
+            if (properties != null)
+                request = request.WithHeader(HeaderNames.ContextProperties, properties);
 
             return transport.SendAsync(request, connectionTimeout, timeout, cancellationToken);
         }
