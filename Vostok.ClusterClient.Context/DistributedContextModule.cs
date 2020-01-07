@@ -16,6 +16,9 @@ namespace Vostok.Clusterclient.Context
     [PublicAPI]
     public class DistributedContextModule : IRequestModule
     {
+        static DistributedContextModule()
+            => FlowingContext.Configuration.RegisterDistributedGlobal(DistributedContextConstants.RequestPriorityGlobalName, new RequestPrioritySerializer());
+
         public Task<ClusterResult> ExecuteAsync(IRequestContext context, Func<IRequestContext, Task<ClusterResult>> next)
         {
             SetRequestPriority(context);
