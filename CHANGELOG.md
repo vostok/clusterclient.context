@@ -1,3 +1,7 @@
+## 0.1.4 (07.01.2020):
+
+DistributedContextModule now registers RequestPriority as a distributed global.
+
 ## 0.1.3 (23-03-2019):
 
 DistributedContextTransport now overwrites already existing headers.
