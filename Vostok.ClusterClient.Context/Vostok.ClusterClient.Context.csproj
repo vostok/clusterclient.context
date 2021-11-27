@@ -24,11 +24,11 @@
   <ItemGroup>
     <Reference Include="Vostok.ClusterClient.Core">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\vostok.clusterclient.core\Vostok.ClusterClient.Core\bin\Release\netstandard2.0\Vostok.ClusterClient.Core.dll</HintPath>
+      <HintPath>..\..\vostok.clusterclient.core\Vostok.ClusterClient.Core\bin\Release\$(ReferencesFramework)\Vostok.ClusterClient.Core.dll</HintPath>
     </Reference>
     <Reference Include="Vostok.Context">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\vostok.context\Vostok.Context\bin\Release\netstandard2.0\Vostok.Context.dll</HintPath>
+      <HintPath>..\..\vostok.context\Vostok.Context\bin\Release\$(ReferencesFramework)\Vostok.Context.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>
