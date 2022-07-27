@@ -1,0 +1,15 @@
+const Vostok.Clusterclient.Context.DistributedContextConstants.RequestPriorityGlobalName = "vostok.request.priority" -> string
+static Vostok.Clusterclient.Context.IClusterClientConfigurationExtensions.SetupDistributedContext(this Vostok.Clusterclient.Core.IClusterClientConfiguration configuration) -> void
+Vostok.Clusterclient.Context.DistributedContextConstants
+Vostok.Clusterclient.Context.DistributedContextModule
+Vostok.Clusterclient.Context.DistributedContextModule.DistributedContextModule() -> void
+Vostok.Clusterclient.Context.DistributedContextModule.ExecuteAsync(Vostok.Clusterclient.Core.Modules.IRequestContext context, System.Func<Vostok.Clusterclient.Core.Modules.IRequestContext, System.Threading.Tasks.Task<Vostok.Clusterclient.Core.Model.ClusterResult>> next) -> System.Threading.Tasks.Task<Vostok.Clusterclient.Core.Model.ClusterResult>
+Vostok.Clusterclient.Context.DistributedContextTransport
+Vostok.Clusterclient.Context.DistributedContextTransport.Capabilities.get -> Vostok.Clusterclient.Core.Transport.TransportCapabilities
+Vostok.Clusterclient.Context.DistributedContextTransport.DistributedContextTransport(Vostok.Clusterclient.Core.Transport.ITransport transport) -> void
+Vostok.Clusterclient.Context.DistributedContextTransport.SendAsync(Vostok.Clusterclient.Core.Model.Request request, System.TimeSpan? connectionTimeout, System.TimeSpan timeout, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Vostok.Clusterclient.Core.Model.Response>
+Vostok.Clusterclient.Context.IClusterClientConfigurationExtensions
+Vostok.Clusterclient.Context.RequestPrioritySerializer
+Vostok.Clusterclient.Context.RequestPrioritySerializer.Deserialize(string input) -> Vostok.Clusterclient.Core.Model.RequestPriority?
+Vostok.Clusterclient.Context.RequestPrioritySerializer.RequestPrioritySerializer() -> void
+Vostok.Clusterclient.Context.RequestPrioritySerializer.Serialize(Vostok.Clusterclient.Core.Model.RequestPriority? value) -> string
