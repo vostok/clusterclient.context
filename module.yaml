@@ -38,3 +38,23 @@ full-build > notests:
   build:
     target: Vostok.ClusterClient.Context.sln
     configuration: Release
+
+  install:
+    - Vostok.ClusterClient.Context/bin/Release/netstandard2.0/Vostok.ClusterClient.Context.dll
+    - module vostok.clusterclient.core
+    - groups:
+        - target-framework: "netstandard2.0"
+          libraries:
+            - Vostok.ClusterClient.Context/bin/Release/netstandard2.0/Vostok.ClusterClient.Context.dll
+          modules:
+            - name: vostok.clusterclient.core
+        - target-framework: "net6.0"
+          libraries:
+            - Vostok.ClusterClient.Context/bin/Release/net6.0/Vostok.ClusterClient.Context.dll
+          modules:
+            - name: vostok.clusterclient.core
+        - target-framework: "net8.0"
+          libraries:
+            - Vostok.ClusterClient.Context/bin/Release/net8.0/Vostok.ClusterClient.Context.dll
+          modules:
+            - name: vostok.clusterclient.core
